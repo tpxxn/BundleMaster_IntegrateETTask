@@ -10,13 +10,10 @@ public class Init : MonoBehaviour
 {
     private Transform uiManagerTf;
     private UpdateBundleDataInfo updateBundleDataInfo;
-    
+
     private void Awake()
     {
-        System.AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
-        {
-            AssetLogHelper.LogError(e.ExceptionObject.ToString());
-        };
+        System.AppDomain.CurrentDomain.UnhandledException += (sender, e) => { AssetLogHelper.LogError(e.ExceptionObject.ToString()); };
         ETTask.ExceptionHandler += AssetLogHelper.LogError;
     }
 
@@ -25,17 +22,17 @@ public class Init : MonoBehaviour
         DontDestroyOnLoad(gameObject);
         Initialization();
     }
-    
+
     void Update()
     {
         AssetComponent.Update();
     }
-    
+
     void OnLowMemory()
     {
         AssetComponent.ForceUnLoadAll();
     }
-    
+
     void OnDestroy()
     {
         updateBundleDataInfo?.CancelUpdate();
@@ -50,9 +47,8 @@ public class Init : MonoBehaviour
         //创建下载UI
         GameObject downLoadUI = GameObject.Instantiate(Resources.Load<GameObject>("DownLoadUI"), uiManagerTf);
         DownLoad(downLoadUI).Coroutine();
-        
     }
-    
+
     /// <summary>
     /// 下载资源
     /// </summary>
@@ -61,8 +57,8 @@ public class Init : MonoBehaviour
         downLoadUI.SetActive(false);
         Dictionary<string, bool> updatePackageBundle = new Dictionary<string, bool>()
         {
-            {AssetComponentConfig.DefaultBundlePackageName, false},
-            {"SubBundle", false},
+            { AssetComponentConfig.DefaultBundlePackageName, false },
+            { "SubBundle", false },
             //{"OriginFile", false},
         };
         updateBundleDataInfo = await AssetComponent.CheckAllBundlePackageUpdate(updatePackageBundle);
@@ -89,24 +85,15 @@ public class Init : MonoBehaviour
             progressSlider.value = p / 100.0f;
             progressText.text = p.ToString("#0.00") + "%";
         };
-        updateBundleDataInfo.DownLoadSpeedCallback += s =>
-        {
-            speedText.text = (s / 1024.0f).ToString("#0.00") + " kb/s";
-        };
-        updateBundleDataInfo.ErrorCancelCallback += () =>
-        {
-            Debug.LogError("下载取消");
-        };
+        updateBundleDataInfo.DownLoadSpeedCallback += s => { speedText.text = (s / 1024.0f).ToString("#0.00") + " kb/s"; };
+        updateBundleDataInfo.ErrorCancelCallback += () => { Debug.LogError("下载取消"); };
         cancelDownLoad.onClick.RemoveAllListeners();
         cancelDownLoad.onClick.AddListener(updateBundleDataInfo.CancelUpdate);
         reDownLoad.onClick.RemoveAllListeners();
-        reDownLoad.onClick.AddListener(() =>
-        {
-            DownLoad(downLoadUI).Coroutine();
-        });
+        reDownLoad.onClick.AddListener(() => { DownLoad(downLoadUI).Coroutine(); });
         AssetComponent.DownLoadUpdate(updateBundleDataInfo).Coroutine();
     }
-    
+
     private async ETTask InitializePackage()
     {
         await AssetComponent.Initialize(AssetComponentConfig.DefaultBundlePackageName);
@@ -121,10 +108,13 @@ public class Init : MonoBehaviour
         //异步加载资源
         GameObject loginUIAsset = await AssetComponent.LoadAsync<GameObject>(out LoadHandler loginUIHandler, BPath.Assets_Bundles_LoginUI__prefab);
         GameObject loginUIObj = UnityEngine.Object.Instantiate(loginUIAsset, uiManagerTf, false);
-        
+
+        GameObject testAsset = await AssetComponent.LoadAsync<GameObject>(out LoadHandler testHandle, BPath.Assets_Res_UI_Test__prefab);
+        GameObject testObj = Instantiate(testAsset, uiManagerTf, false);
+
         // GameObject subUI = await AssetComponent.LoadAsync<GameObject>(out LoadHandler usbUIHandler, "Assets/Bundles/SubBundleAssets/SubUI_Copy.prefab");
         // GameObject subUIObj = UnityEngine.Object.Instantiate(subUI, loginUIObj.transform, false);
-        
+
         loginUIObj.transform.Find("Login").GetComponent<Button>().onClick.AddListener(() =>
         {
             //卸载资源
@@ -146,11 +136,11 @@ public class Init : MonoBehaviour
         {
             //同步加载资源(加载分包内的资源)
             //GameObject gameObjectAsset = AssetComponent.Load<GameObject>(BPath.Assets_Bundles_SubBundleAssets_mister91jiao__prefab, "SubBundle");
-            
+
             // BundleRuntimeInfo bundleRuntimeInfo = AssetComponent.GetBundleRuntimeInfo("SubBundle");
             // GameObject gameObjectAsset = bundleRuntimeInfo.Load<GameObject>(BPath.Assets_Bundles_SubBundleAssets_mister91jiao__prefab);
             // GameObject obj = UnityEngine.Object.Instantiate(gameObjectAsset);
-            
+
             // GameObject gameObjectAsset1 = AssetComponent.Load<GameObject>(BPath.Assets_Bundles_SubBundleAssets_mister91jiao__prefab);
             // GameObject obj1 = UnityEngine.Object.Instantiate(gameObjectAsset1);
             AssetComponent.LoadAsync<GameObject>(out LoadHandler handler, BPath.Assets_Bundles_SubBundleAssets_mister91jiao__prefab, "SubBundle").Coroutine();
@@ -161,7 +151,7 @@ public class Init : MonoBehaviour
             };
             //LoadGroupTest().Coroutine();
         };
-    } 
+    }
 
     private async ETTask LoadGroupTest()
     {
@@ -169,7 +159,7 @@ public class Init : MonoBehaviour
         //Debug.LogError(zfnp.height);
         handler.UnLoad();
     }
-    
+
     private async ETTask ResetUI()
     {
         //异步加载资源
@@ -179,7 +169,7 @@ public class Init : MonoBehaviour
         {
             GameObject.Destroy(resetUIObj);
             AssetComponent.UnInitializeAll();
-            
+
             AsyncOperation operation = SceneManager.LoadSceneAsync("Init_2");
             operation.completed += asyncOperation =>
             {
@@ -188,5 +178,4 @@ public class Init : MonoBehaviour
             };
         });
     }
-    
 }

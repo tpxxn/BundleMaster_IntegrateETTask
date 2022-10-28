@@ -1,0 +1,14 @@
+10/28/2022 7:56:52 PM|0|origin
+BMConfig.asset|459|4179010829
+BMConfig.asset.meta|189|2764742137
+DownLoadUI.prefab|34587|853093670
+DownLoadUI.prefab.meta|154|3293956516
+EventSystem.prefab|1981|1966626956
+EventSystem.prefab.meta|154|3418428344
+UIManager.prefab|2852|213091275
+UIManager.prefab.meta|154|3083713409
+UniversalRenderPipelineAsset.asset|2252|205787764
+UniversalRenderPipelineAsset.asset.meta|189|1869300317
+UniversalRenderPipelineAsset_Renderer.asset|1724|2524977145
+UniversalRenderPipelineAsset_Renderer.asset.meta|189|1484736383
+
